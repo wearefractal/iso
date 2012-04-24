@@ -50,13 +50,10 @@ Handle<Value> iso::Run(const Arguments &args)
     assert(isola->_isolate);
 
     //Set up isolate
-    Locker locker(isola->_isolate);
-    isola->_isolate->Enter();
     V8::Initialize();
     HandleScope scope;
     Persistent<Context> ctx = Context::New();
     Context::Scope context_scope(ctx);
-    Locker::StartPreemption(100);
 
     //Parse callback
     unsigned fnct = 0;
@@ -81,9 +78,6 @@ Handle<Value> iso::Run(const Arguments &args)
     if (try_catch.HasCaught()) {
         FatalException(try_catch);
     }
-
-    Locker::StopPreemption();
-    //isola->_isolate->Exit();
     return scope.Close(result);
 }
 Handle<Value> iso::Close(const Arguments &args)

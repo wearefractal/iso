@@ -39,7 +39,6 @@ describe 'Isolate', ->
         should.exist res
         res.should.equal 2
         done()
-      console.log res
 
   describe 'close()', ->
     it 'should close after run', (done) ->
