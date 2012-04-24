@@ -18,10 +18,22 @@
 
 ## Usage
 
+Scope binding examples will be added soon.
+
 ```coffee-script
 Isolate = require 'iso'
 
-i = new Isolate
+# Synchronous
+a = 1
+b = 2
+i = new Isolate -> a+b
+result = i.run() # result == 3
+
+# Asynchronous
+a = 1
+b = 2
+i = new Isolate (cb) -> cb a+b
+i.run (result) -> # result == 3
 ```
 
 ## Examples
