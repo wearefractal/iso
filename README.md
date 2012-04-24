@@ -1,14 +1,14 @@
-![status](https://secure.travis-ci.org/wearefractal/APPNAME.png?branch=master)
+![status](https://secure.travis-ci.org/wearefractal/iso.png?branch=master)
 
 ## Information
 
 <table>
 <tr> 
-<td>Package</td><td>APPNAME</td>
+<td>Package</td><td>iso</td>
 </tr>
 <tr>
 <td>Description</td>
-<td>NOTHING HERE YET</td>
+<td>v8 isolates for node</td>
 </tr>
 <tr>
 <td>Node Version</td>
@@ -19,12 +19,14 @@
 ## Usage
 
 ```coffee-script
-NOTHING HERE YET
+Isolate = require 'iso'
+
+i = new Isolate
 ```
 
 ## Examples
 
-You can view more examples in the [example folder.](https://github.com/wearefractal/APPNAME/tree/master/examples)
+You can view more examples in the [example folder.](https://github.com/wearefractal/iso/tree/master/examples)
 
 ## LICENSE
 
