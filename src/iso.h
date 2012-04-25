@@ -23,6 +23,7 @@ private:
     ~iso() {}
     static Persistent<FunctionTemplate> s_ct;
     static Handle<Value> New(const Arguments &args);
+    Isolate* _isolate;
     Persistent<Function> _task;
 };
 

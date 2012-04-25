@@ -12,7 +12,9 @@
    },
    "devDependencies":{
       "mocha":"*",
-      "should":"*"
+      "should":"*",
+      "benchmark":"*",
+      "async":"*"
    },
    "scripts":{
       "test":"mocha --compilers coffee:coffee-script",

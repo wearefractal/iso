@@ -31,6 +31,7 @@ Handle<Value> iso::New (const Arguments &args)
 
     iso *isola = new iso();
     isola->_task = Persistent<Function>::New(Handle<Function>::Cast(args[0]));
+    isola->_isolate = Isolate::New();
     isola->Wrap(args.This());
     return scope.Close(args.This());
 }
@@ -45,15 +46,17 @@ Handle<Value> iso::Run(const Arguments &args)
     //Unwrap class
     iso *isola = ObjectWrap::Unwrap<iso>(args.This());
     assert(isola);
+    assert(isola->_isolate);
+    assert(isola->_task->IsFunction());
 
     //Set up isolate
     HandleScope scope;
     Handle<Value> result;
     Persistent<Context> context = Context::New();
-    Isolate* isolate = Isolate::New();
+    Isolate* isolate = isola->_isolate;
     {
+        //Locker locker(isolate);
         //Isolate::Scope isolate_scope(isolate);
-        Locker locker(isolate);
 
         //Parse callback
         unsigned argc = 0;
@@ -80,10 +83,10 @@ Handle<Value> iso::Run(const Arguments &args)
         }
 
         //Clean
-        Unlocker unlocker;
+        //Unlocker unlocker;
         context.Dispose();
     }
-    isolate->Dispose();
+    //isolate->Dispose();
     return scope.Close(result);
 }
 
