@@ -48,6 +48,7 @@ Handle<Value> iso::Run(const Arguments &args)
 
     //Set up isolate
     HandleScope scope;
+    Handle<Value> result;
     Persistent<Context> context = Context::New();
     Isolate* isolate = Isolate::New();
     {
@@ -73,7 +74,7 @@ Handle<Value> iso::Run(const Arguments &args)
 
         //Run function
         TryCatch try_catch;
-        Handle<Value> result = isola->_task->Call(uscope, argc, argv);
+        result = isola->_task->Call(uscope, argc, argv);
         if (try_catch.HasCaught()) {
             FatalException(try_catch);
         }
@@ -81,9 +82,9 @@ Handle<Value> iso::Run(const Arguments &args)
         //Clean
         Unlocker unlocker;
         context.Dispose();
-        return scope.Close(result);
     }
     isolate->Dispose();
+    return scope.Close(result);
 }
 
 extern "C" {
