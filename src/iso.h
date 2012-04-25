@@ -17,14 +17,12 @@ public:
 
     /* FUNCTIONS */
     static Handle<Value> Run(const Arguments &args);
-    static Handle<Value> Close(const Arguments &args);
 
 private:
     iso() : ObjectWrap() {}
     ~iso() {}
     static Persistent<FunctionTemplate> s_ct;
     static Handle<Value> New(const Arguments &args);
-    Isolate* _isolate;
     Persistent<Function> _task;
 };
 

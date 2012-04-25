@@ -16,7 +16,6 @@ void iso::Initialize(Handle<Object> target)
     s_ct->SetClassName(NODE_SYMBOL("iso"));
 
     NODE_SET_PROTOTYPE_METHOD(s_ct, "run", Run);
-    NODE_SET_PROTOTYPE_METHOD(s_ct, "close", Close);
 
     target->Set(NODE_SYMBOL("iso"), t->GetFunction());
 }
@@ -32,7 +31,6 @@ Handle<Value> iso::New (const Arguments &args)
 
     iso *isola = new iso();
     isola->_task = Persistent<Function>::New(Handle<Function>::Cast(args[0]));
-    isola->_isolate = Isolate::New();
     isola->Wrap(args.This());
     return scope.Close(args.This());
 }
@@ -47,47 +45,45 @@ Handle<Value> iso::Run(const Arguments &args)
     //Unwrap class
     iso *isola = ObjectWrap::Unwrap<iso>(args.This());
     assert(isola);
-    assert(isola->_isolate);
 
     //Set up isolate
-    V8::Initialize();
     HandleScope scope;
-    Persistent<Context> ctx = Context::New();
-    Context::Scope context_scope(ctx);
+    Persistent<Context> context = Context::New();
+    Isolate* isolate = Isolate::New();
+    {
+        //Isolate::Scope isolate_scope(isolate);
+        Locker locker(isolate);
 
-    //Parse callback
-    unsigned fnct = 0;
-    Local<Value> fnargs[1];
-    if(args.Length() > 0) {
-        fnct = 1;
-        fnargs[0] = Local<Function>::Cast(args[0]);
-        assert(fnargs[0]->IsFunction());
-    }
+        //Parse callback
+        unsigned argc = 0;
+        Handle<Value> argv[1];
+        if(args.Length() > 0) {
+            argc = 1;
+            argv[0] = Handle<Function>::Cast(args[0]);
+            assert(argv[0]->IsFunction());
+        }
 
-    //Parse scope
-    Handle<Object> uscope;
-    if(args.Length() > 1) {
-     uscope = Handle<Object>::Cast(args[0]->ToObject());
-    } else {
-     uscope = ctx->Global();
-    }
+        //Parse scope
+        Handle<Object> uscope;
+        if(args.Length() > 1) {
+            uscope = Handle<Object>::Cast(args[0]->ToObject());
+        } else {
+            uscope = context->Global();
+        }
 
-    //Run function
-    TryCatch try_catch;
-    Handle<Value> result = isola->_task->Call(uscope, fnct, fnargs);
-    if (try_catch.HasCaught()) {
-        FatalException(try_catch);
+        //Run function
+        TryCatch try_catch;
+        Handle<Value> result = isola->_task->Call(uscope, argc, argv);
+        if (try_catch.HasCaught()) {
+            FatalException(try_catch);
+        }
+
+        //Clean
+        Unlocker unlocker;
+        context.Dispose();
+        return scope.Close(result);
     }
-    return scope.Close(result);
-}
-Handle<Value> iso::Close(const Arguments &args)
-{
-    HandleScope scope;
-    iso *isola = ObjectWrap::Unwrap<iso>(args.This());
-    assert(isola);
-    assert(isola->_isolate);
-    isola->_isolate->Dispose();
-    return scope.Close(args.This());
+    isolate->Dispose();
 }
 
 extern "C" {

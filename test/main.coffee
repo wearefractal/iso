@@ -35,18 +35,7 @@ describe 'Isolate', ->
 
     it 'should run with callback', (done) ->
       iso = new Isolate (cb) -> cb 2
-      res = iso.run (res) ->
+      iso.run (res) ->
         should.exist res
         res.should.equal 2
         done()
-
-  describe 'close()', ->
-    it 'should close after run', (done) ->
-      iso = new Isolate -> 1+1
-      iso.run()
-      iso.close()
-      done()
-    it 'should close before run', (done) ->
-      iso = new Isolate -> 1+1
-      iso.close()
-      done()
